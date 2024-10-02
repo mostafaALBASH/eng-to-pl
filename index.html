@@ -192,7 +192,7 @@
       const handleLetterClick = (letter) => {
         setSelectedLetter(letter);
         const filtered = jsonData.filter((item) =>
-          item.targetValue.startsWith(letter)
+          item.targetValue.toLowerCase().startsWith(letter)
         );
         setFilteredData(filtered);
         setData(filtered.slice(0, pageSize));
