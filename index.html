@@ -4,18 +4,17 @@
     name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   />
-  <title>App</title>
+  <title>Eng to PL App</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/preact@10.5.13/dist/preact.min.js"></script>
   <script src="https://unpkg.com/preact@10.5.13/hooks/dist/hooks.umd.js"></script>
   <style>
-    /* Additional styles for better mobile responsiveness */
     body {
       padding: 1rem;
     }
 
     table {
-      width: 100%; /* Make table full-width */
+      width: 100%;
       margin-top: 1rem;
     }
 
@@ -27,8 +26,8 @@
     }
 
     button {
-      padding: 0.75rem 1rem; /* Larger touch areas */
-      font-size: 1rem; /* Larger text for buttons */
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
     }
 
     @media (max-width: 400px) {
@@ -117,21 +116,24 @@
           setData(nextPageData);
           setCurrentRow(0);
           setCurrentPage((prevPage) => prevPage + 1);
-        } else if (currentPage * pageSize >= filteredData.length) {
-          setIsPlaying(false);
-          setIsSpeaking(false);
+        } else {
+          setCurrentPage(1);
+          setCurrentRow(0);
+          setData(filteredData.slice(0, pageSize));
         }
       };
 
       useEffect(() => {
-        if (isPlaying && !isSpeaking && !isPaused && currentRow < data.length) {
-          speakRow(currentRow);
-        } else if (
-          isPlaying &&
-          currentRow >= data.length &&
-          currentPage * pageSize < filteredData.length
-        ) {
-          fetchNextPage();
+        if (isPlaying && !isSpeaking && !isPaused) {
+          if (currentRow < data.length) {
+            speakRow(currentRow);
+          } else if (currentPage * pageSize >= filteredData.length) {
+            setCurrentPage(1);
+            setCurrentRow(0);
+            setData(filteredData.slice(0, pageSize));
+          } else {
+            fetchNextPage();
+          }
         }
       }, [isPlaying, currentRow, data, isSpeaking, isPaused]);
 
@@ -192,7 +194,7 @@
       const handleLetterClick = (letter) => {
         setSelectedLetter(letter);
         const filtered = jsonData.filter((item) =>
-          item.targetValue.toLowerCase().startsWith(letter)
+          item.targetValue?.toLowerCase().startsWith(letter)
         );
         setFilteredData(filtered);
         setData(filtered.slice(0, pageSize));
